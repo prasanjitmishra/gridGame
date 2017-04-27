@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		table, th, td{border: 1px solid #000;border-collapse: collapse;}
+		table#metrix{background: #FFF;text-align: center;font-size: 30px;font-weight: bold;}
+		.element.active{border: 2px solid red}
+	</style>
+</head>
+<body>
+	<table id="metrix">
+		
+	</table>
+	<button id="restart">Restart</button>
+	<div class="statusText"></div>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<script type="text/javascript">
+		var HEIGHT = 300;
+		var WIDTH = 300;
+		var obj = document.getElementById('metrix');
+		var currentRow;
+		var currentCol;
+		var success;
+		
+		initializeMatrix = function(data){
+			$(obj).empty();
+			$(obj).css('height',HEIGHT+'px');
+			$(obj).css('width',WIDTH+'px');
+
+			for (var i = 0; i < 3 ; i++) {
+				$(obj).append('<tr></tr>');
+				for (var j = 0; j < 3 ; j++){
+					$(obj).find('tr').eq(i).append('<td class="element">'+data[i][j]+'</td>');
+				} 
+			}
+		};
+
+		checkData = function(data){
+			var firstNo = data[0][0]; 
+			var flag = true;
+			for (var i = 0; i < 3 ; i++) {
+				for (var j = 0; j < 3 ; j++){
+					if(data[i][j] != firstNo)
+					{
+						flag = false;
+						break;
+					}	
+				} 
+			}
+
+			checkSuccess(flag);
+			return flag;
+		}
+
+		checkSuccess = function(flag){
+			if(flag)
+	        	$(".statusText").text("!!!game over!!!,Thank You!!!, Please Click on Restart Button to start a new game.");
+	        else
+	        	$(".statusText").text('');
+		}
+
+		makeCurrentInactive = function(currentRow,currentCol){
+			$('tr').eq(currentRow).find('td').eq(currentCol).removeClass('active');
+		}
+
+		makeNextActive = function(currentRow,currentCol){
+			$('tr').eq(currentRow).find('td').eq(currentCol).addClass('active');
+		}
+
+		checkKeyPress = function(event,data){
+			makeCurrentInactive(currentRow,currentCol);
+			
+			switch(event.which) {
+		        case 37: // left
+					// This will Check the left bound
+					if(currentCol == 0 || success == true) 
+						return;
+					currentCol -= 1;
+					data[currentRow][currentCol] += 1;
+					initializeMatrix(data);
+			        makeNextActive(currentRow,currentCol);
+			        break;
+
+		        case 38: // up
+		        	// This will Check the top bound
+		        	if(currentRow == 0 || success == true) 
+		        		return;
+					currentRow -= 1;
+					data[currentRow][currentCol] += 1;
+					initializeMatrix(data);
+			        makeNextActive(currentRow,currentCol);
+		        	break;
+
+		        case 39: // right
+		        	// This will Check the right bound
+		        	if(currentCol == 2 || success == true) 
+		        		return;
+					currentCol += 1;
+					data[currentRow][currentCol] += 1;
+					initializeMatrix(data);
+			        makeNextActive(currentRow,currentCol);
+		        	break;
+
+		        case 40: // down
+		        	// This will Check the bottom bound
+		        	if(currentRow == 2 || success == true) 
+		        		return;
+					currentRow += 1;
+					data[currentRow][currentCol] += 1;
+					initializeMatrix(data);
+			        makeNextActive(currentRow,currentCol);
+		        	break;	
+
+		        default: return; // exit this handler for other keys
+		    }
+
+	        success  = checkData(data);
+		};
+
+
+		// This will initialize the variables - data,currentRow,currentCol,success, call initializeMatrix,makeNextActive andreturns data that is initialized
+		initializeGame = function(){
+			var data = [[1,0,0],
+						[1,1,0],
+						[1,1,0]];
+			currentRow = 0;
+			currentCol = 0;
+			success = false;
+			initializeMatrix(data);
+			makeNextActive(currentRow,currentCol);
+
+			return data;
+		}
+		
+		$(document).ready(function(){
+
+			var data = initializeGame();
+
+			$(document).keydown(function(e) {
+			    checkKeyPress(e,data);
+			});
+
+			$("#restart").click(function(){
+				data = initializeGame();
+			});	
+		})
+		
+
+		
+	</script>
+</body>
+</html>
