@@ -60,56 +60,60 @@
 	        	$(".statusText").text('');
 		}
 
-		makeCurrentInactive = function(currentRow,currentCol){
+		makeCurrentInactive = function(){
 			$('tr').eq(currentRow).find('td').eq(currentCol).removeClass('active');
 		}
 
-		makeNextActive = function(currentRow,currentCol){
+		makeNextActive = function(){
 			$('tr').eq(currentRow).find('td').eq(currentCol).addClass('active');
 		}
 
 		checkKeyPress = function(event,data){
-			makeCurrentInactive(currentRow,currentCol);
+			
 			
 			switch(event.which) {
 		        case 37: // left
 					// This will Check the left bound
 					if(currentCol == 0 || success == true) 
 						return;
+					makeCurrentInactive();
 					currentCol -= 1;
 					data[currentRow][currentCol] += 1;
 					initializeMatrix(data);
-			        makeNextActive(currentRow,currentCol);
+			        makeNextActive();
 			        break;
 
 		        case 38: // up
 		        	// This will Check the top bound
 		        	if(currentRow == 0 || success == true) 
 		        		return;
+		        	makeCurrentInactive();
 					currentRow -= 1;
 					data[currentRow][currentCol] += 1;
 					initializeMatrix(data);
-			        makeNextActive(currentRow,currentCol);
+			        makeNextActive();
 		        	break;
 
 		        case 39: // right
 		        	// This will Check the right bound
 		        	if(currentCol == 2 || success == true) 
 		        		return;
+		        	makeCurrentInactive();
 					currentCol += 1;
 					data[currentRow][currentCol] += 1;
 					initializeMatrix(data);
-			        makeNextActive(currentRow,currentCol);
+			        makeNextActive();
 		        	break;
 
 		        case 40: // down
 		        	// This will Check the bottom bound
 		        	if(currentRow == 2 || success == true) 
 		        		return;
+		        	makeCurrentInactive();
 					currentRow += 1;
 					data[currentRow][currentCol] += 1;
 					initializeMatrix(data);
-			        makeNextActive(currentRow,currentCol);
+			        makeNextActive();
 		        	break;	
 
 		        default: return; // exit this handler for other keys
@@ -128,7 +132,7 @@
 			currentCol = 0;
 			success = false;
 			initializeMatrix(data);
-			makeNextActive(currentRow,currentCol);
+			makeNextActive();
 
 			return data;
 		}
