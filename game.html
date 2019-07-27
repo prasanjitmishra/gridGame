@@ -1,36 +1,110 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title></title>
-	<style type="text/css">
-		table, th, td{border: 1px solid #000;border-collapse: collapse;}
-		table#metrix{background: #FFF;text-align: center;font-size: 30px;font-weight: bold;}
-		.element.active{border: 2px solid red}
-	</style>
-</head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Game</title>
+	<head>
+		<style type="text/css">
+			body {
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				color: #696969;
+				background: #959595;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
+			}
+			body div.parent {
+				padding: 25px 25px;
+				background: #f5ab35;
+				margin: 10px auto;
+				width: 800px;
+				position: relative;
+				text-align: center;
+				height: fit-content;
+			}
+			.button {
+				padding: 10px;
+				font-weight: bold;
+				border-radius: 10px 0px;
+				font-size: 15px;
+				background-color: green;
+				border-color: green;
+				color: white;
+				text-transform: capitalize;
+				margin: 5px;
+				outline: none;
+			}
+			table, th, td{border: 1px solid #cccccc;border-collapse: collapse;}
+			table#metrix{background: #FFF;text-align: center;font-size: 25px;font-weight: bold;height: -webkit-fill-available;
+			width: -webkit-fill-available;}
+			.element.active{border: 2px solid #cccccc; background: #cccccc}
+			.statusText{color: whitesmoke;font-weight: bold;text-align:center}
+			.clock{text-align: center;font-weight: bold;font-size: 30px;color: whitesmoke;background: green; }
+		</style>
+	</head>
 <body>
-	<table id="metrix">
-		
-	</table>
-	<button id="restart">Restart</button>
-	<div class="statusText"></div>
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-	<script type="text/javascript">
+	<div class="parent">
+		<div class="clock"></div>
+		<table id="metrix">
+			
+		</table>
+		<button class="button" id="restart">Restart</button>
+		<div class="statusText"></div>
+	</div>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+		<script type="text/javascript">
 		var HEIGHT = 300;
 		var WIDTH = 300;
+		var maxColumn = 3;
+		var maxRow = 3;
 		var obj = document.getElementById('metrix');
 		var currentRow;
 		var currentCol;
 		var success;
-		
-		initializeMatrix = function(data){
-			$(obj).empty();
-			$(obj).css('height',HEIGHT+'px');
-			$(obj).css('width',WIDTH+'px');
+		var countDownDate;
+		var interval;
+		startTimer = function () {
+			countDownDate = new Date();
+			countDownDate.setMinutes( countDownDate.getMinutes() + 2);
+			countDownDate = countDownDate.getTime();
+			console.log(countDownDate);
+			if (interval) {
+				clearInterval(interval);
+			}
+			interval = setInterval(function() {
+				console.log("timer")
+			// Get today's date and time
+			var now = new Date().getTime();
+				console.log("Current :" + now);
+			// Find the distance between now and the count down date
+			var distance = countDownDate - now;
+			console.log("difference : "+ distance);
+			// Time calculations for days, hours, minutes and seconds
+			var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+			var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+			var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+			var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-			for (var i = 0; i < 3 ; i++) {
+			// Display the result in the element with id="demo"
+			$(".clock").html(days + ":" + hours + ":"+ minutes + ":" + seconds);
+			// If the count down is finished, write some text 
+			if (distance < 0) {
+				clearInterval(interval);
+				$(".clock").html("EXPIRED");
+				console.log("expired");
+			}
+			}, 1000);
+		}
+
+		
+
+		initializeMatrix = function(data){
+			startTimer();
+			$(obj).empty();
+			// $(obj).css('height',HEIGHT+'px');
+			// $(obj).css('width',WIDTH+'px');
+
+			for (var i = 0; i < maxRow ; i++) {
 				$(obj).append('<tr></tr>');
-				for (var j = 0; j < 3 ; j++){
+				for (var j = 0; j < maxColumn ; j++){
 					$(obj).find('tr').eq(i).append('<td class="element">'+data[i][j]+'</td>');
 				} 
 			}
@@ -39,8 +113,8 @@
 		checkData = function(data){
 			var firstNo = data[0][0]; 
 			var flag = true;
-			for (var i = 0; i < 3 ; i++) {
-				for (var j = 0; j < 3 ; j++){
+			for (var i = 0; i < maxRow ; i++) {
+				for (var j = 0; j < maxColumn ; j++){
 					if(data[i][j] != firstNo)
 					{
 						flag = false;
@@ -54,8 +128,11 @@
 		}
 
 		checkSuccess = function(flag){
-			if(flag)
-	        	$(".statusText").text("!!!game over!!!,Thank You!!!, Please Click on Restart Button to start a new game.");
+			if(flag) {
+	        	$(".statusText").text("!!!game over!!!Thank You!!!");
+				clearInterval(interval);
+				$(".clock").html("00:00:00:00");
+			}
 	        else
 	        	$(".statusText").text('');
 		}
@@ -125,16 +202,24 @@
 
 		// This will initialize the variables - data,currentRow,currentCol,success, call initializeMatrix,makeNextActive andreturns data that is initialized
 		initializeGame = function(){
-			var data = [[1,0,0],
-						[1,1,0],
-						[1,1,0]];
+			var data = [[
+							[1,0,0],
+							[1,1,0],
+							[1,1,0]
+						],
+						[
+							[3,2,2],
+							[1,2,0],
+							[1,1,0]
+						]];
+
 			currentRow = 0;
 			currentCol = 0;
 			success = false;
-			initializeMatrix(data);
+			initializeMatrix(data[1]);
 			makeNextActive();
 
-			return data;
+			return data[1];
 		}
 		
 		$(document).ready(function(){
